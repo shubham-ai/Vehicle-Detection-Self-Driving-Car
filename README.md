@@ -1,37 +1,115 @@
+
 # Vehicle Detection
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 
-In this project, your goal is to write a software pipeline to detect vehicles in a video (start with the test_video.mp4 and later implement on full project_video.mp4), but the main output or product we want you to create is a detailed writeup of the project.  Check out the [writeup template](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup.  
 
-Creating a great writeup:
----
-A great writeup should include the rubric points as well as your description of how you addressed each point.  You should include a detailed description of the code used in each step (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
 
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
+### The goals / steps of this project are the following:
 
-You can submit your writeup in markdown or use another method and submit a pdf instead.
-
-The Project
----
-
-The goals / steps of this project are the following:
-
-* Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier
-* Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
-* Note: for those first two steps don't forget to normalize your features and randomize a selection for training and testing.
+* Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a Linear SVM classifier
+    * Apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
 * Implement a sliding-window technique and use your trained classifier to search for vehicles in images.
 * Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Estimate a bounding box for vehicles detected.
 
-Here are links to the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) examples to train your classifier.  These example images come from a combination of the [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), the [KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/), and examples extracted from the project video itself.   You are welcome and encouraged to take advantage of the recently released [Udacity labeled dataset](https://github.com/udacity/self-driving-car/tree/master/annotations) to augment your training data.  
 
-Some example images for testing your pipeline on single frames are located in the `test_images` folder.  To help the reviewer examine your work, please save examples of the output from each stage of your pipeline in the folder called `ouput_images`, and include them in your writeup for the project by describing what each image shows.    The video called `project_video.mp4` is the video your pipeline should work well on.  
+### Rubric Point
 
-**As an optional challenge** Once you have a working pipeline for vehicle detection, add in your lane-finding algorithm from the last project to do simultaneous lane-finding and vehicle detection!
+* Here I will consider the rubric points individually and describe how I addressed each point in my 
+  implementation.
 
-**If you're feeling ambitious** (also totally optional though), don't stop there!  We encourage you to go out and take video of your own, and show us how you would implement this project on a new video!
+*** File submission inculde all the required files that are necessary to quialy the project submission ***
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+   1) project.ipynb
+   2) Readme.md
+   3) Writeup.
+   
+#### Below are the steps described individually that are implement in the project
 
+
+1) HOG feature
+2) Extract Feature(SVC , CLF Results)
+3) Sliding Windows
+4) Pipeline Explanation
+
+#### 1) HOG feature  is called Histogram of Oriented Gradient 
+* It has very import task in prediction as it helps to get 
+* It mainly consist of gradient , magnitued and direction 
+* Grouping these individual values into small group of cells 
+* And classifing from almost 9 orients bins to get the result 
+* and then combining again the each pixel 
+     
+<img src="./output_images/hog_img.png" width='400'/>
+#### 2) Extraction Feature 
+* It combine spatial feature , hist_feature and hog_feature 
+* below are the parameter used by me for bestresults 
+---
+```python
+
+    color_space = 'YCrCb' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+    orient = 9  # HOG orientations
+    pix_per_cell = 8 # HOG pixels per cell
+    cell_per_block = 2 # HOG cells per block
+    hog_channel = "ALL" # Can be 0, 1, 2, or "ALL"
+    spatial_size = (32, 32) # Spatial binning dimensions
+    hist_bins = 32    # Number of histogram bins
+    spatial_feat = True # Spatial features on or off
+    hist_feat = True # Histogram features on or off
+    hog_feat = True # HOG features on or off
+
+```
+---
+
+      * Later is applied SVC and CLF , I prefered CLF over SVC as it has more accuray in practical over CVC while i            was using it in my project video in order to detect the cars   
+ 
+_*result after extracting feature and applying SVC along with CLF *_ 
+---
+```
+
+Using: 9 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 8460
+0.7 Seconds to train SVC...
+Test Accuracy of SVC =  1.0
+179.53 Seconds to train CLF...
+Test Accuracy of SVC =  1.0
+My CLF predicts:  [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  0.]
+For these 10 labels:  [ 0.  0.  1.  1.  1.  1.  0.  0.  0.  0.]
+0.078 Seconds to predict 10 labels with CLF
+
+```
+---
+####  3) Sliding Windows
+
+* For sliding window mutliple function has been used like sliding_windows function itself, search_windows which further consist of single_img_features but I have used another function such as find_cars() which was used  during the process of reading frame one by one and applying prediction 
+
+
+<img src="./output_images/sliding_window.png" width='400'/>
+
+<img src="./output_images/search_windows_img.png" width='400'/>
+
+
+
+search_windows_img.png
+#### 4) Pipeline Explanation
+
+* process_pipe is the function in which on fund car function is applied vaious time in various axis in order to find the sorrounding cars . rectangles is the varable taken to compress all the rectanges into one rectange which are appended in rects variable of list , using that reactange list I applied add_heat to apply head signle like and then applied threshold on them using apply_threshold  and got the expected result and return the img
+
+
+<img src="./output_images/final_img.png" width='800'/>
+
+##### test video
+<video width="400" controls>
+  <source src="test_video_out.mp4.mp4" type="video/mp4">
+</video>
+
+##### project video
+<video width="400" controls>
+  <source src="project_video_out.mp4.mp4" type="video/mp4">
+</video>
+
+
+
+```python
+
+```
