@@ -201,10 +201,12 @@ heatmap[heatmap <= threshold] = 0
 ```
 
 
-later draw_labeled_bboxes function is used and result is achieved 
+later draw_labeled_bboxes function is used and result is achieved
 
 
 ![alt text][image5]
+
+_i have used Deque method to collect record of past frame and sum them up to get better results , thanks to my udacity  , i hope you have like my video_
 
 ### Here the resulting bounding boxes are drawn onto the last frame in the series:
 ![heat][image6]
